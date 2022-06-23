@@ -1,1 +1,1 @@
-Display current directory contents, including hidden files (starting with .).
+Create a script that moves all files beginning with an uppercase letter to the directory /tmp/u
