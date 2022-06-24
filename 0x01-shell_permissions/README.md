@@ -1,1 +1,1 @@
-Write a script that changes the owner to vincent and the group owner to staff for all the files and directories in the working directory
+ script that adds execute permission to the owner and the group owner, and read permission to other users, to the file hello
