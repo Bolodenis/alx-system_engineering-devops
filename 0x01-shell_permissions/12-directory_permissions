@@ -1,2 +1,2 @@
 #!/bin/bash
-mkdir my_dir cd my_dir touch permissions 751
+mkdir -m 751 my_dir
