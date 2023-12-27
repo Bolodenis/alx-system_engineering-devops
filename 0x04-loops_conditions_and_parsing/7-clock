@@ -8,9 +8,10 @@ while [ $hour -le 12 ];
 do
   echo "hour: $hour"
   minutes=1
-   while [ $minutes -le 59 ]; do
-      echo "  $minutes"
-      ((minutes++))
+   while [ $minutes -le 59 ]; 
+   do
+     echo "  $minutes"
+     ((minutes++))
   done
   ((hour++))
 done	
