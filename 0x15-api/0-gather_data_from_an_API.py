@@ -3,35 +3,42 @@
 A Script that, uses this REST API, for a given employee ID, returns
 information about his/her TODO list progress
 """
-import json
 import requests
-from sys import argv
+import sys
+import json
 
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("Usage: python script_name.py <employee_id>")
+        sys.exit(1)
 
-if __name__ == "__main__":
-    session_request = requests.Session()
+    employee_id = sys.argv[1]
+    base_url = "https://jsonplaceholder.typicode.com/"
 
-    employee_id = argv[1]
-    todo_url = ('https://jsonplaceholder.typicode.com/users/{}/'
-                'todos').format(employee_id)
-    name_url = ('https://jsonplaceholder.typicode.com/users/{}'
-                .format(employee_id))
+    # Fetch user information
+    user_url = "{}users/{}".format(base_url, employee_id)
+    user_response = requests.get(user_url)
+    if user_response.status_code != 200:
+        print("Failed to fetch user information")
+        sys.exit(1)
 
-    todo_response = session_request.get(todo_url)
-    name_response = session_request.get(name_url)
+    user_data = user_response.json()
 
-    todo_data = todo_response.json()
-    employee_name = name_response.json()['name']
+    # Fetch todos for the user
+    todo_url = "{}todos".format(base_url)
+    todo_response = requests.get(todo_url, params={'userId': employee_id})
+    if todo_response.status_code != 200:
+        print("Failed to fetch todos")
+        sys.exit(1)
 
-    total_tasks_completed = 0
+    todos = todo_response.json()
+    completed = []
+    for todo in todos:
+        if todo["completed"]:
+            completed.append(todo["title"])
 
-    for task in todo_data:
-        if task['completed']:
-            total_tasks_completed += 1
+    # Print user tasks information
+    print("Employee {} is done with tasks ({}/{}):".format(user_data.get('name'), len(completed), len(todos)))
+    for task in completed:
+        print("\t {}".format(task))
 
-    print("Employee {} is done with tasks({}/{}):"
-          .format(employee_name, total_tasks_completed, len(todo_data)))
-
-    for task in todo_data:
-        if task['completed']:
-            print("\t " + task.get('title'))
