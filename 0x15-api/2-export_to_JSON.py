@@ -1,16 +1,16 @@
 #!/usr/bin/python3
-"""i Script that, uses a REST API, for a given employee ID, returns
+"""
+A Script that, uses a REST API, for a given employee ID, returns
 information about his/her TODO list progress
-exporting data in the CSV format.
+and exports data in the JSON format.
 """
 
-import csv
+import json
 import requests
 from sys import argv
 
 
 if __name__ == "__main__":
-
     session_request = requests.Session()
 
     employee_id = argv[1]
@@ -25,16 +25,20 @@ if __name__ == "__main__":
     todo_data = todo_response.json()
     employee_username = name_response.json()['username']
 
-    total_tasks_completed = 0
+    tasks = []
 
     for task in todo_data:
-        if task['completed']:
-            total_tasks_completed += 1
+        tasks.append({
+            "task": task.get('title'),
+            "completed": task.get('completed'),
+            "username": employee_username
+        })
 
-    file_csv = '{}.csv'.format(employee_id)
+    user_data = {
+        employee_id: tasks
+    }
 
-    with open(file_csv, "w", newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
-        for task in todo_data:
-            writer.writerow([employee_id, employee_username,
-                             task.get('completed'), task.get('title')])
+    file_json = '{}.json'.format(employee_id)
+
+    with open(file_json, "w") as jsonfile:
+        json.dump(user_data, jsonfile, indent=4)
