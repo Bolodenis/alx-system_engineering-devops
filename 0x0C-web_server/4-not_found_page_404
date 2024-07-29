@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Installs Nginx with the following configurations:
+# + Listens on port 80.
+
+# Update package list and install Nginx
+sudo apt-get update
+sudo apt-get install -y nginx
+
+# Create necessary directories and files with appropriate permissions
+sudo mkdir -p /etc/nginx/html
+echo "Hello World" | sudo tee /etc/nginx/html/index.html
+echo "Ceci n'est pas une page" | sudo tee /etc/nginx/html/404.html
+
+# Write the Nginx server configuration
+sudo bash -c 'cat <<EOF > /etc/nginx/sites-enabled/default
+server {
+    listen 80;
+    listen [::]:80 default_server;
+    root   /etc/nginx/html;
+    index  index.html index.htm;
+
+    location /redirect_me {
+        return 301 http://www.youtube.com/;
+    }
+
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
+}
+EOF'
+
+# Restart Nginx to apply the changes
+sudo service nginx restart
+
+# Verify the Nginx service status
+sudo service nginx status
+
+# Test if the configuration is correctly applied
+curl -sI localhost | grep "HTTP/1.1 200 OK"
+curl -sI localhost/redirect_me | grep "HTTP/1.1 301 Moved Permanently"
+curl -s localhost/nonexistentpage | grep "Ceci n'est pas une page"
+
