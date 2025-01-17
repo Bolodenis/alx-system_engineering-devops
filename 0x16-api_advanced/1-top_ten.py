@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
-''' This module contains the function top_ten '''
-import json
+'''This module contains the function top_ten.'''
+
 import requests
 
+
 def top_ten(subreddit):
-    ''' Gets the top ten topics of a subreddit '''
+    '''Gets the top ten topics of a subreddit.'''
     url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
     headers = {"User-Agent": "GetHotTopics/1.0"}
     try:
@@ -23,6 +24,5 @@ def top_ten(subreddit):
         else:
             for post in posts:
                 print(post['data']['title'])
-    except Exception as e:
+    except Exception:
         print(None)
-
