@@ -4,18 +4,29 @@
 import json
 import requests
 
-
 def top_ten(subreddit):
-    ''' Gets the top ten topics of subscribers of a subreddit '''
-    response = requests.get("https://www.reddit.com/r/{}/top.json?limit=10"
-                            .format(subreddit),
-                            headers={"User-Agent": "GetHotTopics"},
-                            allow_redirects=False).json()
+    ''' Gets the top ten topics of a subreddit '''
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
+    headers = {"User-Agent": "GetHotTopics/1.0"}
+    
+    try:
+        response = requests.get(url, headers=headers, allow_redirects=False)
+        
+        # Check if the subreddit exists
+        if response.status_code != 200:
+            print(None)
+            return
 
-    data = response.get('data')
-    if not data:
+        # Parse the JSON response
+        data = response.json()
+        posts = data.get('data', {}).get('children', [])
+        
+        # Print titles of the first 10 hot posts
+        if not posts:
+            print(None)
+        else:
+            for post in posts:
+                print(post['data']['title'])
+    except Exception as e:
         print(None)
-    else:
-        titles = []
-        for child in data['children']:
-            print(child['data']['title'])
+
